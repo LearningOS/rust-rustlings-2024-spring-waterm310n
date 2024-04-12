@@ -2,7 +2,7 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -29,13 +29,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: PartialOrd+Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: PartialOrd+Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,15 +69,42 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
+	pub fn merge(list_a: LinkedList<T>, list_b: LinkedList<T>) -> Self {
+        let mut res = Self {
             length: 0,
             start: None,
             end: None,
+        };
+        /*
+            直接一路unsafe过去，这数据结构写的我一脸蒙蔽
+        */
+        let mut cur_a = list_a.start;
+        let mut cur_b = list_b.start;
+        while cur_a != None {
+            while cur_b != None {
+                unsafe {
+                    if (*cur_a.unwrap().as_ptr()).val > (*cur_b.unwrap().as_ptr()).val  {
+                        res.add((*cur_b.unwrap().as_ptr()).val.clone());
+                        cur_b = (*cur_b.unwrap().as_ptr()).next;
+                    }else {
+                        break;
+                    }
+                }
+            }
+            unsafe {
+                res.add((*cur_a.unwrap().as_ptr()).val.clone());
+                cur_a = (*cur_a.unwrap().as_ptr()).next;
+            }
+            
         }
-	}
+        while cur_b != None {
+            unsafe {
+                res.add((*cur_b.unwrap().as_ptr()).val.clone());
+                cur_b = (*cur_b.unwrap().as_ptr()).next;
+            }
+        }
+        res
+    }
 }
 
 impl<T> Display for LinkedList<T>

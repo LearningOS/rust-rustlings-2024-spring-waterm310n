@@ -3,11 +3,27 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+fn sort<T:PartialOrd>(array: &mut [T]){
+    // 实现的是插入排序,交换元素也需要调用方法--！
+    let mut i = 0 ;
+    let n = array.len();
+    while i < n {
+        let mut j = i+1 ;
+        let mut cur_index = i;
+        let mut cur_min = &array[i];
+        while j < n {
+            if cur_min > &array[j] {
+                cur_min = &array[j];
+                cur_index = j;
+            }
+            j+=1
+        };
+        array.swap(i, cur_index);
+        i += 1;
+    }
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
