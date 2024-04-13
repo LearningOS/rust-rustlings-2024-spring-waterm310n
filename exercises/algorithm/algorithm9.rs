@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -11,9 +10,9 @@ pub struct Heap<T>
 where
     T: Default,
 {
-    count: usize,
     items: Vec<T>,
     comparator: fn(&T, &T) -> bool,
+    ptr:usize,
 }
 
 impl<T> Heap<T>
@@ -22,14 +21,14 @@ where
 {
     pub fn new(comparator: fn(&T, &T) -> bool) -> Self {
         Self {
-            count: 0,
-            items: vec![T::default()],
+            items: vec![],
             comparator,
+            ptr:0
         }
     }
 
     pub fn len(&self) -> usize {
-        self.count
+        self.items.len()
     }
 
     pub fn is_empty(&self) -> bool {
@@ -37,28 +36,26 @@ where
     }
 
     pub fn add(&mut self, value: T) {
-        //TODO
+        self.items.push(value);
+        self.up(self.len()-1)
     }
-
-    fn parent_idx(&self, idx: usize) -> usize {
-        idx / 2
-    }
-
-    fn children_present(&self, idx: usize) -> bool {
-        self.left_child_idx(idx) <= self.count
-    }
-
-    fn left_child_idx(&self, idx: usize) -> usize {
-        idx * 2
-    }
-
-    fn right_child_idx(&self, idx: usize) -> usize {
-        self.left_child_idx(idx) + 1
-    }
-
-    fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
+    //   0 
+    // 1   2
+    //3 4 5 6
+    fn up(&mut self,mut j:usize) {
+        loop {
+            if j == 0 {
+                return;
+            }
+            let i = (j - 1) / 2; // parent
+            if i == j || ! (self.comparator)(&self.items[j], &self.items[i]) {
+                break
+            }else {
+                self.ptr = 0;
+            }
+            self.items.swap(i, j);
+            j = i
+        }
     }
 }
 
@@ -79,15 +76,22 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default+Copy,
 {
     type Item = T;
 
+    // 太奇怪了，怎么会有人想要迭代堆？
     fn next(&mut self) -> Option<T> {
         //TODO
-		None
+		if self.ptr == self.items.len(){
+            return None
+        }else{
+            self.ptr+=1;
+            Some(self.items[self.ptr-1]) 
+        }
     }
 }
+
 
 pub struct MinHeap;
 
